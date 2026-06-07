@@ -19,10 +19,13 @@
   }
 
   h2 {
-    text-align: center;
-    font-size: 34px; /* 🔥 APP HEADER SIZE */
-    font-weight: 800;
-    margin: 20px 0;
+  text-align: center;
+  font-size: 34px;
+  font-weight: 800;
+  margin: 20px 0;
+
+  color: white;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.6);
   }
 
   .container {
@@ -33,7 +36,7 @@
 
   .slot {
   width: 100%;
-  background: rgba(255, 255, 255, 0.88);
+  background: rgba(255, 255, 255, 0.8);
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
 
@@ -97,21 +100,29 @@
   }
 
   .btn {
-    width: 100%;
-    padding: 22px; /* 🔥 HUGE BUTTON */
-    border: none;
-    border-radius: 16px;
-    cursor: pointer;
-    background: #007bff;
-    color: white;
-    font-size: 22px; /* 🔥 BIG BUTTON TEXT */
-    font-weight: 800;
+  width: 100%;
+  padding: 22px;
+  border: none;
+  border-radius: 16px;
+  cursor: pointer;
+
+  background: #ff8c00; /* Orange */
+  color: white;
+
+  font-size: 22px;
+  font-weight: 800;
+
+  transition: 0.2s ease;
+  }
+
+  .btn:hover {
+  background: #e67e00;
   }
 
   .btn:active {
     transform: scale(0.98);
   }
-
+  
   .btn:disabled {
     background: #ccc;
     cursor: not-allowed;
