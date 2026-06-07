@@ -5,11 +5,17 @@
 
   <style>
   body {
-    font-family: Arial, sans-serif;
-    background: #f5f6fa;
-    margin: 0;
-    padding: 0;
-    font-size: 22px; /* 🔥 BIG BASE */
+  font-family: Arial, sans-serif;
+
+  background-image: url("images/background.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+
+  margin: 0;
+  padding: 0;
+  font-size: 22px;
   }
 
   h2 {
@@ -26,13 +32,17 @@
   }
 
   .slot {
-    width: 100%;
-    background: white;
-    border-radius: 18px;
-    padding: 22px;
-    margin-bottom: 16px;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.10);
-    box-sizing: border-box;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+
+  border-radius: 18px;
+  padding: 22px;
+  margin-bottom: 16px;
+
+  box-shadow: 0 4px 16px rgba(0,0,0,0.18);
+  box-sizing: border-box;
   }
 
   .slot-header {
