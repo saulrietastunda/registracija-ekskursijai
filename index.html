@@ -198,9 +198,6 @@ async function loadSlots() {
           ${registered} / ${capacity} booked
         </div>
 
-        <a href="${data.map}" target="_blank">📍 View location</a>
-        <br><br>
-
         <button class="btn"
           ${isFull ? "disabled" : ""}
           onclick="register('${docSnap.id}', ${registered}, ${capacity})">
