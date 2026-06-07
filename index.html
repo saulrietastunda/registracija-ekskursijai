@@ -164,7 +164,7 @@ async function loadSlots() {
         html += `
         <div class="slot">
             <div class="slot-header">
-                <div>🕒 ${data.label}</div>
+                <div>${data.label}</div>
                 <div class="badge ${isFull ? "full" : ""}">
                     ${isFull ? "FULL" : remaining + " spots"}
                 </div>
@@ -177,9 +177,6 @@ async function loadSlots() {
             <div class="info">
                 ${registered} / ${capacity} booked
             </div>
-
-            <a href="${data.map}" target="_blank">📍 View location</a>
-            <br><br>
 
             <button class="btn" ${isFull ? "disabled" : ""} 
                 onclick="register('${docSnap.id}', ${registered}, ${capacity})">
