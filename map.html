@@ -2,36 +2,107 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Event Map</title>
+<title>Ekskursijas karte</title>
 
 <style>
-body{
-    font-family:Arial,sans-serif;
-    text-align:center;
-    margin:20px;
+body {
+    font-family: Arial, sans-serif;
+    background-image: url("images/background.png");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    margin: 0;
+    padding: 20px;
+    box-sizing: border-box;
 }
 
-img{
-    max-width:100%;
+.container {
+    max-width: 900px;
+    margin: 0 auto;
+    background: rgba(255,255,255,0.85);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    border-radius: 20px;
+    padding: 25px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.18);
+    text-align: center;
+}
+
+h2 {
+    font-size: 34px;
+    font-weight: 800;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.message {
+    font-size: 22px;
+    margin-bottom: 25px;
+    color: #555;
+}
+
+.map-image {
+    width: 100%;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+.btn {
+    display: inline-block;
+    margin-top: 25px;
+    padding: 18px 30px;
+    border-radius: 14px;
+    background: #f55c00;
+    color: white;
+    text-decoration: none;
+    font-size: 22px;
+    font-weight: 800;
+}
+
+.btn:hover {
+    background: #e67e00;
+}
+
+@media (max-width: 480px) {
+    h2 {
+        font-size: 38px;
+    }
+
+    .message {
+        font-size: 24px;
+    }
+
+    .btn {
+        width: 100%;
+        box-sizing: border-box;
+        font-size: 24px;
+    }
 }
 </style>
 </head>
 
 <body>
 
-<h2>Your Event Map</h2>
+<div class="container">
 
-<img id="mapImage">
+    <h2>✅ Registration Successful</h2>
 
-<script>
+    <div class="message">
+        Thank you for registering. Below is the event map.
+    </div>
 
-const params = new URLSearchParams(window.location.search);
+    <img
+        src="images/map.jpeg"
+        alt="Event Map"
+        class="map-image"
+    >
 
-const map = params.get("map");
+    <a href="index.html" class="btn">
+        Back to Home
+    </a>
 
-document.getElementById("mapImage").src = map;
-
-</script>
+</div>
 
 </body>
 </html>
