@@ -2,6 +2,7 @@
 <html>
 <head>
 <title>Reģistrācija ekskursija</title>
+
 <style>
 body {
     font-family: Arial, sans-serif;
@@ -34,18 +35,15 @@ h2 {
     width: 100%;
     background: rgba(255, 255, 255, 0.8);
     backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
     border-radius: 18px;
     padding: 22px;
     margin-bottom: 16px;
     box-shadow: 0 4px 16px rgba(0,0,0,0.18);
-    box-sizing: border-box;
 }
 
 .slot-header {
     display: flex;
     justify-content: space-between;
-    align-items: center;
     font-size: 28px;
     font-weight: 800;
 }
@@ -55,11 +53,10 @@ h2 {
     border-radius: 999px;
     font-size: 18px;
     background: #eee;
-    white-space: nowrap;
 }
 
 .full {
-    background: #ff4d4f;
+    background: red;
     color: white;
 }
 
@@ -75,22 +72,6 @@ h2 {
 .bar-fill {
     height: 100%;
     background: #4caf50;
-    width: 0%;
-    transition: 0.3s ease;
-}
-
-.info {
-    font-size: 20px;
-    color: #555;
-    margin-bottom: 18px;
-}
-
-a {
-    font-size: 20px;
-    color: #007bff;
-    text-decoration: none;
-    display: inline-block;
-    margin-bottom: 18px;
 }
 
 .btn {
@@ -103,27 +84,10 @@ a {
     color: white;
     font-size: 22px;
     font-weight: 800;
-    transition: 0.2s ease;
-}
-
-.btn:hover {
-    background: #e67e00;
-}
-
-.btn:active {
-    transform: scale(0.98);
 }
 
 .btn:disabled {
     background: #ccc;
-    cursor: not-allowed;
-}
-
-@media (max-width: 480px) {
-    body { font-size: 24px; }
-    h2 { font-size: 38px; }
-    .slot-header { font-size: 30px; }
-    .btn { font-size: 24px; padding: 24px; }
 }
 </style>
 </head>
@@ -131,6 +95,7 @@ a {
 <body>
 
 <h2>Pieejamie laiki</h2>
+
 <div class="container" id="slots">Loading...</div>
 
 <script type="module">
@@ -138,31 +103,30 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebas
 import { getFirestore, collection, getDocs, doc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const firebaseConfig = {
-    apiKey: "AIzaSyDRVchRkNmDTfKN5meoSVLVFK-YeswY-Us",
+    apiKey: "AIzaSyDRVr...",
     authDomain: "slot-booking-5df6b.firebaseapp.com",
     projectId: "slot-booking-5df6b",
-    storageBucket: "slot-booking-5df6b.firebasestorage.app",
-    messagingSenderId: "93670207614",
-    appId: "1:93670207614:web:acb827d6a0ab0c9ba5e82f"
 };
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 async function loadSlots() {
-    const querySnapshot = await getDocs(collection(db, "slots"));
+    const snap = await getDocs(collection(db, "slots"));
     let html = "";
 
-    querySnapshot.forEach((docSnap) => {
+    snap.forEach((docSnap) => {
         const data = docSnap.data();
-        const capacity = Number(data.capacity || 0);
-        const registered = Number(data.registered || 0);
+
+        const capacity = data.capacity;
+        const registered = data.registered;
         const remaining = capacity - registered;
-        const percent = capacity > 0 ? (registered / capacity) * 100 : 0;
+        const percent = (registered / capacity) * 100;
         const isFull = registered >= capacity;
 
         html += `
         <div class="slot">
+
             <div class="slot-header">
                 <div>${data.label}</div>
                 <div class="badge ${isFull ? "full" : ""}">
@@ -174,19 +138,20 @@ async function loadSlots() {
                 <div class="bar-fill" style="width:${percent}%"></div>
             </div>
 
-            <div class="info">
+            <div style="margin-bottom:15px;">
                 ${registered} / ${capacity} reģistrēti
             </div>
 
-            <button class="btn" ${isFull ? "disabled" : ""} 
+            <button class="btn" ${isFull ? "disabled" : ""}
                 onclick="register(
-                '${docSnap.id}',
-                ${registered},
-                ${capacity},
-                '${data.map}'
+                    '${docSnap.id}',
+                    ${registered},
+                    ${capacity},
+                    '${data.label}'
                 )">
                 ${isFull ? "Pilns" : "Reģistrēties"}
             </button>
+
         </div>
         `;
     });
@@ -194,30 +159,25 @@ async function loadSlots() {
     document.getElementById("slots").innerHTML = html;
 }
 
-    window.register = async function(
-        slotId,
-        registered,
-        capacity,
-        map
-    ) {
-    if (registered >= capacity) {
-        alert("Slot full");
-        return;
-    }
+window.register = async function(slotId, registered, capacity, label) {
 
-    const firstName = prompt("Ievadiet savu vārdu");
+    if (registered >= capacity) return;
+
+    const firstName = prompt("Vārds:");
     if (!firstName) return;
-    
+
+    const lastName = prompt("Uzvārds:");
+    if (!lastName) return;
 
     const ref = doc(db, "slots", slotId);
+
     await updateDoc(ref, {
         registered: increment(1)
     });
 
     window.location.href =
-    "map.html?map=" +
-    encodeURIComponent(map);
-    };
+        "map.html?slot=" + encodeURIComponent(label);
+};
 
 loadSlots();
 </script>
