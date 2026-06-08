@@ -130,7 +130,7 @@ a {
 
 <body>
 
-<h2>Available Slots</h2>
+<h2>Pieejamie laiki</h2>
 <div class="container" id="slots">Loading...</div>
 
 <script type="module">
@@ -166,7 +166,7 @@ async function loadSlots() {
             <div class="slot-header">
                 <div>${data.label}</div>
                 <div class="badge ${isFull ? "full" : ""}">
-                    ${isFull ? "FULL" : remaining + " spots"}
+                    ${isFull ? "FULL" : remaining + " vietas"}
                 </div>
             </div>
 
@@ -175,7 +175,7 @@ async function loadSlots() {
             </div>
 
             <div class="info">
-                ${registered} / ${capacity} booked
+                ${registered} / ${capacity} reģistrēti
             </div>
 
             <button class="btn" ${isFull ? "disabled" : ""} 
@@ -185,7 +185,7 @@ async function loadSlots() {
                 ${capacity},
                 '${data.map}'
                 )">
-                ${isFull ? "Full" : "Book slot"}
+                ${isFull ? "Full" : "Reģistrēties"}
             </button>
         </div>
         `;
