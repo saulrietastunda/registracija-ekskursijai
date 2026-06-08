@@ -166,9 +166,6 @@ window.register = async function(slotId, registered, capacity, label) {
     const firstName = prompt("Vārds:");
     if (!firstName) return;
 
-    const lastName = prompt("Uzvārds:");
-    if (!lastName) return;
-
     const ref = doc(db, "slots", slotId);
 
     await updateDoc(ref, {
