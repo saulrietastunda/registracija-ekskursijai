@@ -1,1 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Event Map</title>
 
+<style>
+body{
+    font-family:Arial,sans-serif;
+    text-align:center;
+    margin:20px;
+}
+
+img{
+    max-width:100%;
+}
+</style>
+</head>
+
+<body>
+
+<h2>Your Event Map</h2>
+
+<img id="mapImage">
+
+<script>
+
+const params = new URLSearchParams(window.location.search);
+
+const map = params.get("map");
+
+document.getElementById("mapImage").src = map;
+
+</script>
+
+</body>
+</html>
