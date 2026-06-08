@@ -9,9 +9,15 @@ body {
     background-image: url("images/background.png");
     background-size: cover;
     margin: 0;
-    padding: 20px;
+
+    /* ✅ CENTERING ADDED */
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
+/* unchanged except centering works now */
 .container {
     max-width: 900px;
     margin: auto;
@@ -56,8 +62,7 @@ img {
 const params = new URLSearchParams(window.location.search);
 const slot = params.get("slot");
 
-document.getElementById("slotTime").innerHTML =
-    slot;
+document.getElementById("slotTime").innerHTML = slot;
 </script>
 
 </body>
