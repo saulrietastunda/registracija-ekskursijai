@@ -1,45 +1,41 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
-<title>Event Map</title>
+<title>Ekskursijas karte</title>
 
 <style>
-body{
-    font-family:Arial,sans-serif;
-    margin:0;
-    min-height:100vh;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    background:url("images/background.png");
-    background-size:cover;
+body {
+    font-family: Arial, sans-serif;
+    background-image: url("images/background.png");
+    background-size: cover;
+    margin: 0;
+    padding: 20px;
 }
 
-/* CENTER CARD */
-.container{
-    background:rgba(255,255,255,0.85);
-    padding:40px;
-    border-radius:20px;
-    width:90%;
-    max-width:700px;
-    text-align:center;
-    box-shadow:0 10px 30px rgba(0,0,0,0.2);
+.container {
+    max-width: 900px;
+    margin: auto;
+    background: rgba(255,255,255,0.9);
+    padding: 25px;
+    border-radius: 20px;
+    text-align: center;
 }
 
-/* ONLY SLOT TEXT */
-.time{
-    font-size:34px;
-    font-weight:900;
-    color:#f55c00;
-    margin-bottom:20px;
+h2 {
+    font-size: 34px;
+    font-weight: 800;
 }
 
-/* MAP IMAGE */
-.map{
-    width:100%;
-    border-radius:15px;
-    box-shadow:0 6px 18px rgba(0,0,0,0.2);
+.time {
+    font-size: 30px;
+    font-weight: 900;
+    color: #f55c00;
+    margin: 15px 0;
+}
+
+img {
+    width: 100%;
+    border-radius: 15px;
 }
 </style>
 </head>
@@ -48,9 +44,11 @@ body{
 
 <div class="container">
 
+    <h2>Reģistrācija veiksmīga</h2>
+
     <div class="time" id="slotTime"></div>
 
-    <img src="images/map.jpeg" class="map">
+    <img src="images/map.jpeg">
 
 </div>
 
@@ -58,7 +56,8 @@ body{
 const params = new URLSearchParams(window.location.search);
 const slot = params.get("slot");
 
-document.getElementById("slotTime").innerHTML = slot || "";
+document.getElementById("slotTime").innerHTML =
+    slot;
 </script>
 
 </body>
