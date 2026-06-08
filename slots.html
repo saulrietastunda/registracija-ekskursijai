@@ -1,1 +1,213 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Reģistrācija ekskursijai</title>
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background-image: url("images/background.png");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    margin: 0;
+    padding: 0;
+    font-size: 22px;
+}
 
+h2 {
+    text-align: center;
+    font-size: 34px;
+    font-weight: 800;
+    margin: 20px 0;
+    color: white;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.6);
+}
+
+.container {
+    width: 100%;
+    padding: 14px;
+    box-sizing: border-box;
+}
+
+.slot {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    border-radius: 18px;
+    padding: 22px;
+    margin-bottom: 16px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.18);
+    box-sizing: border-box;
+}
+
+.slot-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 28px;
+    font-weight: 800;
+}
+
+.badge {
+    padding: 10px 14px;
+    border-radius: 999px;
+    font-size: 18px;
+    background: #eee;
+    white-space: nowrap;
+}
+
+.full {
+    background: #ff4d4f;
+    color: white;
+}
+
+.bar {
+    width: 100%;
+    height: 22px;
+    background: #eee;
+    border-radius: 12px;
+    margin: 18px 0;
+    overflow: hidden;
+}
+
+.bar-fill {
+    height: 100%;
+    background: #4caf50;
+    width: 0%;
+    transition: 0.3s ease;
+}
+
+.info {
+    font-size: 20px;
+    color: #555;
+    margin-bottom: 18px;
+}
+
+a {
+    font-size: 20px;
+    color: #007bff;
+    text-decoration: none;
+    display: inline-block;
+    margin-bottom: 18px;
+}
+
+.btn {
+    width: 100%;
+    padding: 22px;
+    border: none;
+    border-radius: 16px;
+    cursor: pointer;
+    background: #f55c00;
+    color: white;
+    font-size: 22px;
+    font-weight: 800;
+    transition: 0.2s ease;
+}
+
+.btn:hover {
+    background: #e67e00;
+}
+
+.btn:active {
+    transform: scale(0.98);
+}
+
+.btn:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+}
+
+@media (max-width: 480px) {
+    body { font-size: 24px; }
+    h2 { font-size: 38px; }
+    .slot-header { font-size: 30px; }
+    .btn { font-size: 24px; padding: 24px; }
+}
+</style>
+</head>
+
+<body>
+
+<h2>📅 Available Slots</h2>
+<div class="container" id="slots">Loading...</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getFirestore, collection, getDocs, doc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+const firebaseConfig = {
+    apiKey: "AIzaSyDRVchRkNmDTfKN5meoSVLVFK-YeswY-Us",
+    authDomain: "slot-booking-5df6b.firebaseapp.com",
+    projectId: "slot-booking-5df6b",
+    storageBucket: "slot-booking-5df6b.firebasestorage.app",
+    messagingSenderId: "93670207614",
+    appId: "1:93670207614:web:acb827d6a0ab0c9ba5e82f"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+async function loadSlots() {
+    const querySnapshot = await getDocs(collection(db, "slots"));
+    let html = "";
+
+    querySnapshot.forEach((docSnap) => {
+        const data = docSnap.data();
+        const capacity = Number(data.capacity || 0);
+        const registered = Number(data.registered || 0);
+        const remaining = capacity - registered;
+        const percent = capacity > 0 ? (registered / capacity) * 100 : 0;
+        const isFull = registered >= capacity;
+
+        html += `
+        <div class="slot">
+            <div class="slot-header">
+                <div>${data.label}</div>
+                <div class="badge ${isFull ? "full" : ""}">
+                    ${isFull ? "FULL" : remaining + " spots"}
+                </div>
+            </div>
+
+            <div class="bar">
+                <div class="bar-fill" style="width:${percent}%"></div>
+            </div>
+
+            <div class="info">
+                ${registered} / ${capacity} booked
+            </div>
+
+            <button class="btn" ${isFull ? "disabled" : ""} 
+                onclick="register('${docSnap.id}', ${registered}, ${capacity})">
+                ${isFull ? "Full" : "Book slot"}
+            </button>
+        </div>
+        `;
+    });
+
+    document.getElementById("slots").innerHTML = html;
+}
+
+window.register = async function(slotId, registered, capacity) {
+    if (registered >= capacity) {
+        alert("Slot full");
+        return;
+    }
+
+    const name = prompt("Enter your name");
+    if (!name) return;
+
+    const ref = doc(db, "slots", slotId);
+    await updateDoc(ref, {
+        registered: increment(1)
+    });
+
+    loadSlots();
+};
+
+loadSlots();
+</script>
+
+</body>
+</html>
