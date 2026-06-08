@@ -12,56 +12,34 @@ body{
     display:flex;
     justify-content:center;
     align-items:center;
-    text-align:center;
     background:url("images/background.png");
     background-size:cover;
 }
 
-/* SAME CARD STYLE AS INDEX */
+/* CENTER CARD */
 .container{
     background:rgba(255,255,255,0.85);
     padding:40px;
     border-radius:20px;
     width:90%;
     max-width:700px;
+    text-align:center;
     box-shadow:0 10px 30px rgba(0,0,0,0.2);
 }
 
-h1{
-    font-size:30px;
-    font-weight:800;
-    margin-bottom:10px;
-}
-
+/* ONLY SLOT TEXT */
 .time{
-    font-size:26px;
+    font-size:34px;
     font-weight:900;
     color:#f55c00;
-    margin:15px 0 25px 0;
+    margin-bottom:20px;
 }
 
-.description{
-    font-size:20px;
-    color:#444;
-    margin-bottom:25px;
-}
-
+/* MAP IMAGE */
 .map{
     width:100%;
     border-radius:15px;
-    margin-bottom:25px;
     box-shadow:0 6px 18px rgba(0,0,0,0.2);
-}
-
-.btn{
-    display:inline-block;
-    background:#f55c00;
-    color:white;
-    padding:18px 40px;
-    border-radius:12px;
-    text-decoration:none;
-    font-size:22px;
-    font-weight:bold;
 }
 </style>
 </head>
@@ -70,19 +48,9 @@ h1{
 
 <div class="container">
 
-    <h1>Reģistrācija veiksmīga</h1>
-
     <div class="time" id="slotTime"></div>
 
-    <div class="description">
-        Paldies par reģistrāciju! Šeit ir ekskursijas karte.
-    </div>
-
     <img src="images/map.jpeg" class="map">
-
-    <a href="index.html" class="btn">
-        Atpakaļ uz sākumu
-    </a>
 
 </div>
 
@@ -90,8 +58,7 @@ h1{
 const params = new URLSearchParams(window.location.search);
 const slot = params.get("slot");
 
-document.getElementById("slotTime").innerHTML =
-    slot ? "Tavs laiks: " + slot : "";
+document.getElementById("slotTime").innerHTML = slot || "";
 </script>
 
 </body>
