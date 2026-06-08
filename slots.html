@@ -185,7 +185,7 @@ async function loadSlots() {
                 ${capacity},
                 '${data.map}'
                 )">
-                ${isFull ? "Full" : "Reģistrēties"}
+                ${isFull ? "Pilns" : "Reģistrēties"}
             </button>
         </div>
         `;
@@ -205,11 +205,9 @@ async function loadSlots() {
         return;
     }
 
-    const firstName = prompt("Enter your first name");
+    const firstName = prompt("Ievadiet savu vārdu");
     if (!firstName) return;
     
-    const lastName = prompt("Enter your surname");
-    if (!lastName) return;
 
     const ref = doc(db, "slots", slotId);
     await updateDoc(ref, {
