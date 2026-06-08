@@ -179,7 +179,12 @@ async function loadSlots() {
             </div>
 
             <button class="btn" ${isFull ? "disabled" : ""} 
-                onclick="register('${docSnap.id}', ${registered}, ${capacity})">
+                onclick="register(
+                '${docSnap.id}',
+                ${registered},
+                ${capacity},
+                '${data.map}'
+                )">
                 ${isFull ? "Full" : "Book slot"}
             </button>
         </div>
@@ -189,22 +194,32 @@ async function loadSlots() {
     document.getElementById("slots").innerHTML = html;
 }
 
-window.register = async function(slotId, registered, capacity) {
+    window.register = async function(
+        slotId,
+        registered,
+        capacity,
+        map
+    ) {
     if (registered >= capacity) {
         alert("Slot full");
         return;
     }
 
-    const name = prompt("Enter your name");
-    if (!name) return;
+    const firstName = prompt("Enter your first name");
+    if (!firstName) return;
+    
+    const lastName = prompt("Enter your surname");
+    if (!lastName) return;
 
     const ref = doc(db, "slots", slotId);
     await updateDoc(ref, {
         registered: increment(1)
     });
 
-    loadSlots();
-};
+    window.location.href =
+    "map.html?map=" +
+    encodeURIComponent(map);
+    };
 
 loadSlots();
 </script>
