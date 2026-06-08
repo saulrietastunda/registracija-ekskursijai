@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
 <title>Ekskursijas karte</title>
 
 <style>
@@ -9,75 +8,34 @@ body {
     font-family: Arial, sans-serif;
     background-image: url("images/background.png");
     background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-attachment: fixed;
     margin: 0;
     padding: 20px;
-    box-sizing: border-box;
 }
 
 .container {
     max-width: 900px;
-    margin: 0 auto;
-    background: rgba(255,255,255,0.85);
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
-    border-radius: 20px;
+    margin: auto;
+    background: rgba(255,255,255,0.9);
     padding: 25px;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.18);
+    border-radius: 20px;
     text-align: center;
 }
 
 h2 {
     font-size: 34px;
     font-weight: 800;
-    margin-bottom: 20px;
-    color: #333;
 }
 
-.message {
-    font-size: 22px;
-    margin-bottom: 25px;
-    color: #555;
+.time {
+    font-size: 30px;
+    font-weight: 900;
+    color: #f55c00;
+    margin: 15px 0;
 }
 
-.map-image {
+img {
     width: 100%;
-    border-radius: 16px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-}
-
-.btn {
-    display: inline-block;
-    margin-top: 25px;
-    padding: 18px 30px;
-    border-radius: 14px;
-    background: #f55c00;
-    color: white;
-    text-decoration: none;
-    font-size: 22px;
-    font-weight: 800;
-}
-
-.btn:hover {
-    background: #e67e00;
-}
-
-@media (max-width: 480px) {
-    h2 {
-        font-size: 38px;
-    }
-
-    .message {
-        font-size: 24px;
-    }
-
-    .btn {
-        width: 100%;
-        box-sizing: border-box;
-        font-size: 24px;
-    }
+    border-radius: 15px;
 }
 </style>
 </head>
@@ -86,21 +44,21 @@ h2 {
 
 <div class="container">
 
-    <h2>Registration Successful</h2>
+    <h2>Reģistrācija veiksmīga</h2>
 
-    <div class="message">
-        Thank you for registering. Below is the event map.
-    </div>
+    <div class="time" id="slotTime"></div>
 
-    <img
-        src="images/map.jpeg"
-        alt="Event Map"
-        class="map-image"
-    >
-
-    <h2>Registration Successful</h2>
+    <img src="images/map.jpeg">
 
 </div>
+
+<script>
+const params = new URLSearchParams(window.location.search);
+const slot = params.get("slot");
+
+document.getElementById("slotTime").innerHTML =
+    "Tavs laiks: " + slot;
+</script>
 
 </body>
 </html>
