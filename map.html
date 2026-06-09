@@ -60,7 +60,7 @@ img {
 
 <script>
 const params = new URLSearchParams(window.location.search);
-const slot = params.get("slot");
+const label = params.get("slot");
 
 // take only start time (before " - " or "-")
 const startTime = label.split("-")[0].trim(); 
