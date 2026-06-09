@@ -63,7 +63,7 @@ const params = new URLSearchParams(window.location.search);
 const label = params.get("slot");
 
 // take only start time (before " - " or "-")
-const startTime = label.split("-")[0].trim(); 
+const startTime = label.split(/[-–]/)[0].trim(); 
     
 document.getElementById("slotTime").innerHTML = startTime;
 </script>
