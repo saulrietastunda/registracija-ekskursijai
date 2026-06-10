@@ -107,9 +107,9 @@ h2 {
 
 <body>
 
-<h2>Pieejamie laiki</h2>
+<h2 id="pageTitle" style="display:none;">Pieejamie laiki</h2>
 
-<div class="container" id="slots"></div>
+<div class="container" id="slots" style="display:none;"></div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
@@ -169,8 +169,13 @@ async function loadSlots() {
         `;
     });
 
-    document.getElementById("slots").innerHTML = html;
-    document.getElementById("slots").style.opacity = "1";
+    const slotsContainer = document.getElementById("slots");
+
+    slotsContainer.innerHTML = html;
+    slotsContainer.style.display = "block";
+    
+    document.getElementById("pageTitle").style.display = "block";
+    
 }
 
 window.register = async function(slotId, registered, capacity, label) {
