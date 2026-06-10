@@ -208,16 +208,16 @@ window.register = async function(slotId, capacity, label) {
             let registered = data.registered || 0;
             let wave = data.wave || 1;
         
-            // ❌ FINAL FULL STATE (wave 2 already full)
+            // ❌ FINAL FULL (wave 2 already completed)
             if (wave === 2 && registered >= 20) {
                 throw "FULL";
             }
         
-            // 🔁 WAVE 1 → WAVE 2 TRANSITION
+            // 🔁 WAVE 1 → WAVE 2 SWITCH (20th person)
             if (wave === 1 && registered >= 20) {
         
                 transaction.update(slotRef, {
-                    registered: 1,   // 👈 IMPORTANT: THIS user becomes first in wave 2
+                    registered: 1,  // current user becomes first in wave 2
                     wave: 2
                 });
         
