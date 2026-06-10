@@ -130,7 +130,7 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 /* =========================
-   REAL-TIME SLOT LOADING
+   LIVE LOAD
 ========================= */
 function loadSlots() {
 
@@ -144,16 +144,11 @@ function loadSlots() {
 
             const data = docSnap.data();
 
-            const capacity = data.capacity;       // 20
-            const maxCapacity = data.maxCapacity; // 40
+            const capacity = data.capacity; // 20
             const registered = data.registered;
-            const wave = data.wave || 1;
+            const isFull = registered >= capacity;
 
-            const totalSoFar = ((wave - 1) * capacity) + registered;
-            const percent = (totalSoFar / maxCapacity) * 100;
-
-            const remaining = maxCapacity - totalSoFar;
-            const isFull = totalSoFar >= maxCapacity;
+            const percent = (registered / capacity) * 100;
 
             html += `
             <div class="slot">
@@ -161,7 +156,7 @@ function loadSlots() {
                 <div class="slot-header">
                     <div>${data.label}</div>
                     <div class="badge ${isFull ? "full" : ""}">
-                        ${isFull ? "PILNS" : remaining + " vietas"}
+                        ${isFull ? "PILNS" : (capacity - registered) + " vietas"}
                     </div>
                 </div>
 
@@ -170,16 +165,13 @@ function loadSlots() {
                 </div>
 
                 <div style="margin-bottom:15px;">
-                    ${totalSoFar} / ${maxCapacity} reģistrēti
-                    <br>
-                    <small>1. grupa / 2. grupa</small>
+                    ${registered} / ${capacity}
                 </div>
 
                 <button class="btn" ${isFull ? "disabled" : ""}
                     onclick="register(
                         '${docSnap.id}',
                         ${capacity},
-                        ${maxCapacity},
                         '${data.label}'
                     )">
                     ${isFull ? "Reģistrācija noslēgusies" : "Reģistrēties"}
@@ -196,9 +188,9 @@ function loadSlots() {
 }
 
 /* =========================
-   SAFE REGISTRATION LOGIC
+   REGISTER (WAVE RESET LOGIC)
 ========================= */
-window.register = async function(slotId, capacity, maxCapacity, label) {
+window.register = async function(slotId, capacity, label) {
 
     const firstName = prompt("Vārds:");
     if (!firstName) return;
@@ -216,22 +208,20 @@ window.register = async function(slotId, capacity, maxCapacity, label) {
             let registered = data.registered;
             let wave = data.wave || 1;
 
-            let total = ((wave - 1) * capacity) + registered;
+            // if wave full → reset OR finish
+            if (registered >= capacity) {
 
-            if (total >= maxCapacity) {
+                if (wave === 1) {
+                    transaction.update(slotRef, {
+                        registered: 0,
+                        wave: 2
+                    });
+                    return;
+                }
+
                 throw "FULL";
             }
 
-            // wave 1 full → reset to wave 2
-            if (registered >= capacity) {
-                transaction.update(slotRef, {
-                    registered: 0,
-                    wave: 2
-                });
-                return;
-            }
-
-            // normal increment
             transaction.update(slotRef, {
                 registered: registered + 1
             });
