@@ -113,7 +113,7 @@ h2 {
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getFirestore, collection, getDocs, doc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getFirestore, collection, getDocs, doc, updateDoc, increment, addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const firebaseConfig = {
     apiKey: "AIzaSyDRVr...",
@@ -184,10 +184,21 @@ window.register = async function(slotId, registered, capacity, label) {
 
     const ref = doc(db, "slots", slotId);
 
+    // 1. save person into subcollection
+    await addDoc(
+        collection(db, "slots", slotId, "registrations"),
+        {
+            name: firstName,
+            registeredAt: new Date()
+        }
+    );
+
+    // 2. increase counter
     await updateDoc(ref, {
         registered: increment(1)
     });
 
+    // 3. go to map page
     window.location.href =
         "map.html?slot=" + encodeURIComponent(label);
 };
