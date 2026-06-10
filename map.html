@@ -16,32 +16,32 @@ body {
     align-items: center;
 }
 
-/* unchanged except centering works now */
 .container {
     max-width: 900px;
     margin: auto;
     background: rgba(255,255,255,0.9);
-    padding: 25px;
+    padding: 20px;
     border-radius: 20px;
     text-align: center;
 
-    /* NEW */
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    gap: 20px;
+    gap: 8px;
 }
 
 h2 {
-    font-size: 34px;
+    font-size: clamp(36px, 6vw, 48px);
     font-weight: 800;
+    margin: 0;
+    line-height: 1.1;
 }
 
 .time {
-    font-size: 30px;
+    font-size: clamp(40px, 7vw, 54px);
     font-weight: 900;
     color: #f55c00;
-    margin: 15px 0;
+    margin: 0 0 10px 0;
+    line-height: 1.1;
 }
 
 img {
@@ -59,7 +59,7 @@ img {
 
     <div class="time" id="slotTime"></div>
 
-    <img src="images/mapfinal.png">
+    <img src="images/mapfinal.png" alt="Ekskursijas karte">
 
 </div>
 
@@ -67,10 +67,10 @@ img {
 const params = new URLSearchParams(window.location.search);
 const label = params.get("slot");
 
-// take only start time (before " - " or "-")
-const startTime = label.split(/[-–]/)[0].trim(); 
-    
-document.getElementById("slotTime").innerHTML = startTime;
+if (label) {
+    const startTime = label.split(/[-–]/)[0].trim();
+    document.getElementById("slotTime").textContent = startTime;
+}
 </script>
 
 </body>
