@@ -4,13 +4,22 @@
 <title>Reģistrācija ekskursija</title>
 
 <style>
-* { box-sizing: border-box; }
+
+* {
+    box-sizing: border-box;
+}
 
 body {
     font-family: Arial, sans-serif;
     background-image: url("images/background.png");
     background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
     margin: 0;
+    padding: 0;
+    font-size: 22px;
+
     min-height: 100vh;
     display: flex;
     flex-direction: column;
@@ -21,34 +30,43 @@ h2 {
     text-align: center;
     font-size: 34px;
     font-weight: 800;
+    margin: 20px 0;
     color: white;
     text-shadow: 0 2px 8px rgba(0,0,0,0.6);
 }
 
 .container {
     width: 100%;
+    padding: 14px;
+    box-sizing: border-box;
     max-width: 900px;
     margin: 0 auto;
-    padding: 14px;
+
+    opacity: 0;
+    transition: opacity 0.2s ease;
 }
 
 .slot {
-    background: rgba(255,255,255,0.85);
+    width: 100%;
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(6px);
     border-radius: 18px;
     padding: 22px;
-    margin-bottom: 20px;
+    margin-bottom: 25px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.18);
 }
 
 .slot-header {
     display: flex;
     justify-content: space-between;
-    font-size: 26px;
+    font-size: 28px;
     font-weight: 800;
 }
 
 .badge {
     padding: 10px 14px;
     border-radius: 999px;
+    font-size: 18px;
     background: #eee;
 }
 
@@ -58,10 +76,11 @@ h2 {
 }
 
 .bar {
-    height: 20px;
+    width: 100%;
+    height: 22px;
     background: #eee;
-    border-radius: 10px;
-    margin: 15px 0;
+    border-radius: 12px;
+    margin: 18px 0;
     overflow: hidden;
 }
 
@@ -72,19 +91,20 @@ h2 {
 
 .btn {
     width: 100%;
-    padding: 18px;
+    padding: 22px;
     border: none;
-    border-radius: 14px;
+    border-radius: 16px;
+    cursor: pointer;
     background: #f55c00;
     color: white;
-    font-size: 20px;
-    font-weight: bold;
-    cursor: pointer;
+    font-size: 22px;
+    font-weight: 800;
 }
 
 .btn:disabled {
     background: #ccc;
 }
+
 </style>
 </head>
 
@@ -100,9 +120,6 @@ import {
     getFirestore,
     collection,
     doc,
-    getDocs,
-    updateDoc,
-    increment,
     addDoc,
     runTransaction,
     onSnapshot
@@ -117,109 +134,102 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-/* =========================
-   LOAD SLOTS + WAVES
-========================= */
 function loadSlots() {
 
     const slotsRef = collection(db, "slots");
 
-    onSnapshot(slotsRef, async (snap) => {
+    onSnapshot(slotsRef, (snap) => {
 
         let html = "";
 
-        for (const docSnap of snap.docs) {
+        snap.forEach((docSnap) => {
 
-            const slotData = docSnap.data();
-            const wavesRef = collection(db, "slots", docSnap.id, "waves");
-            const waveSnap = await getDocs(wavesRef);
+            const data = docSnap.data();
 
-            let waves = [];
-            waveSnap.forEach(w => {
-                waves.push({ id: w.id, ...w.data() });
-            });
-
-            waves.sort((a, b) => a.order - b.order);
+            const capacity = data.capacity;
+            const registered = data.registered;
+            const remaining = capacity - registered;
+            const percent = (registered / capacity) * 100;
+            const isFull = registered >= capacity;
 
             html += `
             <div class="slot">
+
                 <div class="slot-header">
-                    <div>${slotData.label}</div>
+                    <div>${data.label}</div>
+                    <div class="badge ${isFull ? "full" : ""}">
+                        ${isFull ? "0 vietas" : remaining + " vietas"}
+                    </div>
                 </div>
+
+                <div class="bar">
+                    <div class="bar-fill" style="width:${percent}%"></div>
+                </div>
+
+                <div style="margin-bottom:15px;">
+                    ${registered} / ${capacity} reģistrēti
+                </div>
+
+                <button class="btn" ${isFull ? "disabled" : ""}
+                    onclick="register(
+                        '${docSnap.id}',
+                        ${registered},
+                        ${capacity},
+                        '${data.label}'
+                    )">
+                    ${isFull ? "Reģistrācija noslēgusies" : "Reģistrēties"}
+                </button>
+
+            </div>
             `;
+        });
 
-            waves.forEach(wave => {
-
-                const isFull = wave.registered >= slotData.capacity;
-                const percent = (wave.registered / slotData.capacity) * 100;
-
-                html += `
-                <div style="margin-top:15px;">
-                    <div class="slot-header">
-                        <div>Grupa</div>
-                        <div class="badge ${isFull ? "full" : ""}">
-                            ${isFull ? "PILNS" : (slotData.capacity - wave.registered) + " vietas"}
-                        </div>
-                    </div>
-
-                    <div class="bar">
-                        <div class="bar-fill" style="width:${percent}%"></div>
-                    </div>
-
-                    <div style="margin-bottom:10px;">
-                        ${wave.registered} / ${slotData.capacity}
-                    </div>
-
-                    <button class="btn" ${isFull ? "disabled" : ""}
-                        onclick="register('${docSnap.id}', '${wave.id}', ${slotData.capacity})">
-                        ${isFull ? "Pilns" : "Reģistrēties"}
-                    </button>
-                </div>
-                `;
-            });
-
-            html += `</div>`;
-        }
-
-        document.getElementById("slots").innerHTML = html;
+        const container = document.getElementById("slots");
+        container.innerHTML = html;
+        container.style.opacity = "1";
     });
 }
 
-/* =========================
-   REGISTER INTO WAVE
-========================= */
-window.register = async function(slotId, waveId, capacity) {
+window.register = async function(slotId, registered, capacity, label) {
 
-    const name = prompt("Vārds:");
-    if (!name) return;
+    const firstName = prompt("Vārds:");
+    if (!firstName) return;
 
-    const waveRef = doc(db, "slots", slotId, "waves", waveId);
+    const slotRef = doc(db, "slots", slotId);
     const regRef = collection(db, "slots", slotId, "registrations");
 
-    await runTransaction(db, async (tx) => {
+    try {
+        await runTransaction(db, async (transaction) => {
 
-        const snap = await tx.get(waveRef);
-        const data = snap.data();
+            const slotDoc = await transaction.get(slotRef);
 
-        if (data.registered >= capacity) {
-            throw "FULL";
-        }
+            const currentRegistered = slotDoc.data().registered;
 
-        tx.update(waveRef, {
-            registered: data.registered + 1
+            if (currentRegistered >= capacity) {
+                throw "Slot is full";
+            }
+
+            transaction.update(slotRef, {
+                registered: currentRegistered + 1
+            });
         });
-    });
 
-    await addDoc(regRef, {
-        name,
-        wave: waveId,
-        time: new Date()
-    });
+        window.location.href =
+            "map.html?slot=" + encodeURIComponent(label);
 
-    window.location.href = "map.html?slot=" + encodeURIComponent(waveId);
+        await addDoc(regRef, {
+            name: firstName,
+            registeredAt: new Date()
+        });
+
+        
+    } catch (e) {
+        alert("Šis laiks ir pilns");
+    }
 };
 
 loadSlots();
+
 </script>
 
 </body>
