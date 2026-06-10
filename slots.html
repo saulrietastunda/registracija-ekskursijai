@@ -113,7 +113,7 @@ h2 {
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getFirestore, collection, getDocs, doc, updateDoc, increment, addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getFirestore, collection, getDocs, doc, updateDoc, increment, addDoc, runTransaction, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const firebaseConfig = {
     apiKey: "AIzaSyDRVr...",
@@ -177,33 +177,95 @@ async function loadSlots() {
 
 window.register = async function(slotId, registered, capacity, label) {
 
-    if (registered >= capacity) return;
-
     const firstName = prompt("Vārds:");
     if (!firstName) return;
 
-    const ref = doc(db, "slots", slotId);
+    const slotRef = doc(db, "slots", slotId);
+    const regRef = collection(db, "slots", slotId, "registrations");
 
-    // 1. save person into subcollection
-    await addDoc(
-        collection(db, "slots", slotId, "registrations"),
-        {
+    try {
+        await runTransaction(db, async (transaction) => {
+
+            const slotDoc = await transaction.get(slotRef);
+
+            const currentRegistered = slotDoc.data().registered;
+
+            if (currentRegistered >= capacity) {
+                throw "Slot is full";
+            }
+
+            transaction.update(slotRef, {
+                registered: currentRegistered + 1
+            });
+        });
+
+        // ONLY runs if transaction succeeds
+        await addDoc(regRef, {
             name: firstName,
             registeredAt: new Date()
-        }
-    );
+        });
 
-    // 2. increase counter
-    await updateDoc(ref, {
-        registered: increment(1)
-    });
+        window.location.href =
+            "map.html?slot=" + encodeURIComponent(label);
 
-    // 3. go to map page
-    window.location.href =
-        "map.html?slot=" + encodeURIComponent(label);
+    } catch (e) {
+        alert("Šis laiks ir pilns");
+    }
 };
 
-loadSlots();
+function loadSlots() {
+
+    const slotsRef = collection(db, "slots");
+
+    onSnapshot(slotsRef, (snap) => {
+
+        let html = "";
+
+        snap.forEach((docSnap) => {
+
+            const data = docSnap.data();
+
+            const capacity = data.capacity;
+            const registered = data.registered;
+            const remaining = capacity - registered;
+            const percent = (registered / capacity) * 100;
+            const isFull = registered >= capacity;
+
+            html += `
+            <div class="slot">
+
+                <div class="slot-header">
+                    <div>${data.label}</div>
+                    <div class="badge ${isFull ? "full" : ""}">
+                        ${isFull ? "PILNS" : remaining + " vietas"}
+                    </div>
+                </div>
+
+                <div class="bar">
+                    <div class="bar-fill" style="width:${percent}%"></div>
+                </div>
+
+                <div style="margin-bottom:15px;">
+                    ${registered} / ${capacity} reģistrēti
+                </div>
+
+                <button class="btn" ${isFull ? "disabled" : ""}
+                    onclick="register(
+                        '${docSnap.id}',
+                        ${registered},
+                        ${capacity},
+                        '${data.label}'
+                    )">
+                    ${isFull ? "Reģistrācija noslēgusies" : "Reģistrēties"}
+                </button>
+
+            </div>
+            `;
+        });
+
+        document.getElementById("slots").innerHTML = html;
+    });
+}
 </script>
 
 </body>
