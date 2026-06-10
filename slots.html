@@ -40,6 +40,8 @@ h2 {
     box-sizing: border-box;
     max-width: 900px;
     margin: 0 auto;
+    opacity: 0;
+    transition: opacity 0.2s ease;
 }
 
 .slot {
@@ -107,7 +109,7 @@ h2 {
 
 <h2>Pieejamie laiki</h2>
 
-<div class="container" id="slots">Loading...</div>
+<div class="container" id="slots"></div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
@@ -168,6 +170,7 @@ async function loadSlots() {
     });
 
     document.getElementById("slots").innerHTML = html;
+    document.getElementById("slots").style.opacity = "1";
 }
 
 window.register = async function(slotId, registered, capacity, label) {
