@@ -214,13 +214,15 @@ window.register = async function(slotId, registered, capacity, label) {
             });
         });
 
+        window.location.href =
+            "map.html?slot=" + encodeURIComponent(label);
+
         await addDoc(regRef, {
             name: firstName,
             registeredAt: new Date()
         });
 
-        window.location.href =
-            "map.html?slot=" + encodeURIComponent(label);
+        
 
     } catch (e) {
         alert("Šis laiks ir pilns");
