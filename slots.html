@@ -205,19 +205,19 @@ window.register = async function(slotId, capacity, label) {
             const snap = await transaction.get(slotRef);
             const data = snap.data();
         
-            let registered = data.registered;
+            let registered = data.registered || 0;
             let wave = data.wave || 1;
         
-            // ❌ SLOT FULL AFTER WAVE 2
-            if (wave === 2 && registered >= capacity) {
+            // ❌ FINAL FULL STATE (wave 2 already full)
+            if (wave === 2 && registered >= 20) {
                 throw "FULL";
             }
         
-            // 🔁 IF WAVE 1 IS FULL → RESET TO WAVE 2
-            if (wave === 1 && registered >= capacity) {
+            // 🔁 WAVE 1 → WAVE 2 TRANSITION
+            if (wave === 1 && registered >= 20) {
         
                 transaction.update(slotRef, {
-                    registered: 1,   // 👈 THIS user becomes first in wave 2
+                    registered: 1,   // 👈 IMPORTANT: THIS user becomes first in wave 2
                     wave: 2
                 });
         
@@ -228,11 +228,6 @@ window.register = async function(slotId, capacity, label) {
             transaction.update(slotRef, {
                 registered: registered + 1
             });
-        });
-
-        await addDoc(regRef, {
-            name: firstName,
-            registeredAt: new Date()
         });
 
         window.location.href =
