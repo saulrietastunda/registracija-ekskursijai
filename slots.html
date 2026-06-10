@@ -156,7 +156,7 @@ function loadSlots() {
                 <div class="slot-header">
                     <div>${data.label}</div>
                     <div class="badge ${isFull ? "full" : ""}">
-                        ${isFull ? "PILNS" : (capacity - registered) + " vietas"}
+                        ${isFull ? "0 vietas" : (capacity - registered) + " vietas"}
                     </div>
                 </div>
 
@@ -204,24 +204,27 @@ window.register = async function(slotId, capacity, label) {
 
             const snap = await transaction.get(slotRef);
             const data = snap.data();
-
+        
             let registered = data.registered;
             let wave = data.wave || 1;
-
-            // if wave full → reset OR finish
-            if (registered >= capacity) {
-
-                if (wave === 1) {
-                    transaction.update(slotRef, {
-                        registered: 0,
-                        wave: 2
-                    });
-                    return;
-                }
-
+        
+            // ❌ SLOT FULL AFTER WAVE 2
+            if (wave === 2 && registered >= capacity) {
                 throw "FULL";
             }
-
+        
+            // 🔁 IF WAVE 1 IS FULL → RESET TO WAVE 2
+            if (wave === 1 && registered >= capacity) {
+        
+                transaction.update(slotRef, {
+                    registered: 1,   // 👈 THIS user becomes first in wave 2
+                    wave: 2
+                });
+        
+                return;
+            }
+        
+            // ➕ NORMAL INCREMENT
             transaction.update(slotRef, {
                 registered: registered + 1
             });
